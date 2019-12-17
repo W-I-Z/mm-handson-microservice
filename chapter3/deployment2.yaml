@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard-service
+  annotations:
+    kubernetes.io/change-cause: "update version 2."
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kuard
+  template:
+    metadata:
+      labels:
+        app: kuard
+    spec:
+      containers:
+        - image: gcr.io/kuar-demo/kuard-amd64:2
+          name: kuard
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+

@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mysql
+  namespace: handson
+  labels:
+    app: wordpress-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress-db
+  template:
+    metadata:
+      namespace: handson
+      labels:
+        app: wordpress-db
+    spec:
+      containers:
+        - name: wordpress-db-mysql
+          image: mysql
+          env:
+            - name: MYSQL_DATABASE
+              value: wordpress
+            - name: MYSQL_USER
+              value: wordpress-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_PASSWORD
+                  name: mysql-secret
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_ROOT_PASSWORD
+                  name: mysql-secret
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - mountPath: "/var/lib/mysql"
+              name: mysql-volume
+            - mountPath: "/etc/mysql/conf.d/"
+              name: mysql-config
+      volumes:
+        - name: mysql-volume
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+        - name: mysql-config
+          configMap:
+            name: mysql-config-map
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-db
+  namespace: handson
+spec:
+  ports:
+    - port: 3306
+      protocol: TCP
+  selector:
+    app: wordpress-db
