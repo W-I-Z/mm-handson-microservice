@@ -457,24 +457,12 @@ spec:
 
 [wordpress.yaml](./chapter5/wordpress.yaml)
 
-以下の部分のみ割り当てられた DNS 名に修正してください。
-
-```
-env:
-- name: url
-    value: 
-```
-
----
-
-### Chapter5 - WordPress -
-
-修正したら Deployment を作成しましょう。
-
 ```
 $ kubectl apply -f ./chapter5/wordpress.yaml
 $ kubectl get deploy -n handson
+$ kubectl get service -n handson
 $ kubectl get pods -n handson
 ```
 
-http://割り当てられたDNS名/ でアクセスしてアクセスできたら、成功です。
+deployment が完了し、
+http://[Worker のグローバルIP]:30080 でアクセスしてアクセスできたら、成功です。
