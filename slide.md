@@ -19,12 +19,6 @@ section {
 
 ---
 
-### 今回のハンズオンの内容
-
-![](./screen.png)
-
----
-
 ### 準備するもの
 
 #### ターミナル
@@ -34,7 +28,7 @@ Windows であれば PowerShell、Mac であれば Terminal.app があれば OK 
 
 #### クラウドサーバ
 
-さくらインターネット様にさくらのクラウドを 60 台（Master/Worker の 1 人 2 台構成）をご用意いただいてます。
+さくらインターネット様にさくらのクラウドをご用意いただいてます。
 
 > ありがとうございます :bow:
 
@@ -58,6 +52,13 @@ Kubernetes の基本的な操作方法を実際に操作しながら、WordPress
 
 今回は、ご用意いただいたさくらのクラウドに、必要なソースは全て設置してますので、基本的には、さくらのクラウドに接続して必要なコマンドを実行するのみで進められるようにしています。
 
+
+---
+
+### 今回のハンズオンの内容
+
+![](./screen.png)
+
 ---
 
 ### 今回学ぶ内容
@@ -65,6 +66,38 @@ Kubernetes の基本的な操作方法を実際に操作しながら、WordPress
 - 基本操作
 - 様々なリソースの種類を知る
 - アプリケーションを実行するときにどういう構成になるかそのイメージを把握する
+
+---
+
+### 前準備
+
+サーバを作成したら、MasterサーバにSSHログインしてみましょう。
+
+```
+$ ssh root@IPアドレス
+$ ls -la /root/workspace/
+合計 12
+drwxr-xr-x  3 root root 4096 12月 20 18:31 .
+dr-xr-x---. 7 root root 4096 12月 20 18:31 ..
+drwxr-xr-x  8 root root 4096 12月 20 18:31 mm-handson-microservice
+
+$ kubectl delete nodes handson-master handson-slav
+```
+
+スタートアップスクリプトのログを確認します。
+
+```
+$ cat /root/.sacloud-api/notes/113102284497.log
+```
+
+---
+
+次にWorkerサーバにSSHログインします。
+
+```
+$ kubeadm join IPアドレス:6443 --token トークン \
+    --discovery-token-ca-cert-hash ハッシュ値
+```
 
 ---
 
@@ -110,6 +143,15 @@ describe コマンドでより詳細な情報を取得することもできま�
 
 ```
 $ kubectl describe pods [Pod名]
+```
+---
+
+### Chapter1 - Node/Pod -
+
+port-forwardコマンドで外部から閲覧もできます。
+
+```
+$ kubectl port-forward kuard-service --address 0.0.0.0 8080:8080
 ```
 
 ---
@@ -388,7 +430,7 @@ volumes:
 
 まずは、MySQLのデータを保存するフォルダを Worker に作成します。
 ```
-$ ssh worker
+$ ssh root@worker
 $ mkdir -p /mnt/data/
 ```
 
